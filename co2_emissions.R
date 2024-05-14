@@ -4,7 +4,7 @@ library(mongolite)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 # Read the CSV file
-base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/DADM/PROJECTE/DATA"
+base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
 data <- read.csv(paste(base, "owid-co2-data.csv", sep = "/"))
 
 
@@ -103,7 +103,15 @@ ggplot(data_lf) +
   labs(title= "Relació de l'eperança de vida amb l'emissió de CO2 al 2018", x = "Esperança de vida", y = "CO2")
 
 
-  
+data_filt <- data[data$country %in% c("World", "Non-OECD (GCP)", "Asia", "Asia (GCP)", "Upper-middle-income countries", "High-income countries", "OECD (GCP)", "China", "Asia (excl. China and India)", "North America"), ]
+anim <- ggplot(data_filt, aes(y = country, x = co2, fill = country)) +
+  geom_bar(stat = "identity") +
+  transition_states(year, transition_length = 2, state_length = 1) +
+  labs(x = "Nivel de CO2", y = "País")
+
+animate(anim)
+anim_save(paste0(base, "/animacio_co2.mp4"), animate(anim))
+
   
   
   
