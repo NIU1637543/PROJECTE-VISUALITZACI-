@@ -2,7 +2,7 @@ library(tidyverse)
 library(mongolite)
 library(ggplot2)
 library(gganimate)
-
+library(ggthemes)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -198,4 +198,133 @@ anim <- ggplot(data_formatted, aes(rank, group = country,
 animate(anim)
 anim_save(paste0(base, "/animacio_co2.mp4"), animate(anim))
 
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+data_lf <- data %>%
+  filter(life_expectancy > 0 & co2 > 0)
+
+graph1 = ggplot(data_lf, size=population) + 
+  aes(x=co2, y=life_expectancy, color=country, size = population) +
+  geom_point(alpha=0.7, stroke=0, show.legend = FALSE) +
+  scale_size(range=c(2,12)) +
+  labs(title="Life Expectancy vs CO2 Emissions per Country",
+     x="CO2 Emissions",
+     y="Life Expectancy",
+     color="Country") +
+  theme(legend.position = "none")
   
+graph1.animation = graph1 +
+  transition_time(year) +
+  labs(subtitle="Year: {frame_time}") +
+  shadow_wake(wake_length=0.1)
+graph1.animation  
+  
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+data_gdp <- data %>%
+  filter(gdp > 0 & co2 > 0)
+
+graph1 = ggplot(data_lf) + 
+  aes(x=co2, y=gdp, color=country, size=population) +
+  geom_point(alpha=0.7, stroke=0, show.legend = FALSE) +
+  scale_size(range=c(2,12)) +
+  labs(title="GDP vs CO2 Emissions per Country",
+       x="CO2 Emissions",
+       y="GDP",
+       color="Country") +
+  theme(legend.position = "none")
+
+graph1.animation = graph1 +
+  transition_time(year) +
+  labs(subtitle="Year: {frame_time}") +
+  shadow_wake(wake_length=0.1)
+graph1.animation  
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+data_gini <- data %>%
+  filter(gini > 0 & co2 > 0)
+
+graph1 = ggplot(data_lf) + 
+  aes(x=co2, y=gini, color=country, size=population) +
+  geom_point(alpha=0.7, stroke=0, show.legend = FALSE) +
+  scale_size(range=c(2,12)) +
+  labs(title="GDP vs CO2 Emissions per Country",
+       x="CO2 Emissions",
+       y="Gini",
+       color="Country") +
+  theme(legend.position = "none")
+
+graph1.animation = graph1 +
+  transition_time(year) +
+  labs(subtitle="Year: {frame_time}") +
+  shadow_wake(wake_length=0.1)
+graph1.animation  
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+ 
+data %>%
+  filter(year>1960 & year<2021 & gdp > 0 & co2 > 0)%>%
+  group_by(year) %>%
+  summarise(co2_mean=mean(co2), lf_mean=mean(life_expectancy)) %>%
+  ggplot(aes(x = co2_mean, y = lf_mean)) +
+    geom_point(size = 3) +
+    geom_line(aes(group = 1), color = "blue") +
+    labs(
+      title = "CO2 y Esperança de Vida mitjans mundials del 1960-2021",
+      x = "Emissions de CO2",
+      y = "Esperança de Vida"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "none") 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+data %>%
+  filter(year>1960 & year<2021 & gdp > 0 & co2 > 0) %>%
+  group_by(year) %>%
+  summarise(co2_mean=mean(co2), gdp_mean=mean(gdp)) %>%
+  ggplot(aes(x = co2_mean, y = gdp_mean)) +
+  geom_point(size = 3) +
+  geom_line(aes(group = 1), color = "blue") +
+  labs(
+    title = "CO2 y PIB mitjans mundials del 1960-2021",
+    x = "Emissions de CO2",
+    y = "PIB"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+data %>%
+  filter(year>1960 & year<2021 & gini > 0 & co2 > 0) %>%
+  group_by(year) %>%
+  summarise(co2_mean=mean(co2), gini_mean=mean(gini)) %>%
+  ggplot(aes(x = co2_mean, y = gini_mean)) +
+  geom_point(size = 3) +
+  geom_line(aes(group = 1), color = "blue") +
+  labs(
+    title = "CO2 y GINI mitjans mundials del 1960-2021",
+    x = "Emissions de CO2",
+    y = "GINI"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+data %>%
+  filter(year>1960 & year<2021 & exports > 0 & co2 > 0) %>%
+  group_by(year) %>%
+  summarise(co2_mean=mean(co2), exports_mean=mean(exports)) %>%
+  ggplot(aes(x = co2_mean, y = exports_mean)) +
+  geom_point(size = 3) +
+  geom_line(aes(group = 1), color = "blue") +
+  labs(
+    title = "CO2 y Exportacions mitjanes mundials del 1960-2021",
+    x = "Emissions de CO2",
+    y = "GINI"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") 
