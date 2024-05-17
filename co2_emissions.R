@@ -3,13 +3,14 @@ library(mongolite)
 library(ggplot2)
 library(gganimate)
 library(ggthemes)
-
+library(shiny)
+library(plotly)
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 # Read the CSV file
 base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
-base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
+#base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
 data <- read.csv(paste(base, "owid-co2-data.csv", sep = "/"))
 
 
@@ -77,7 +78,7 @@ data_world <- data %>%
 ggplot(data_world, aes(x = year, y = co2)) +
   geom_point() +
   #geom_smooth(method = "loess") +
-  labs(title = "Evolució del CO2a nivell mundial", x = "Any", y = "CO2") +
+  labs(title = "Evolució del CO2 a nivell mundial", x = "Any", y = "CO2") +
   theme_minimal()
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -329,3 +330,53 @@ data %>%
   ) +
   theme_minimal() +
   theme(legend.position = "none") 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# MAPA INTERACTIU AMB PAÏSOS A ESCOLLIR
+data <- data %>% 
+  select(country, year, population, gdp, co2, 
+         co2_per_capita, methane, methane_per_capita,
+         nitrous_oxide, nitrous_oxide_per_capita)
+
+# Filtrar y resumir los datos
+data_filtered <- data %>%
+  filter(year > 1960 & year < 2021 & gdp > 0 & co2 > 0)
+
+# Definir la interfaz de usuario
+ui <- fluidPage(
+  selectizeInput(
+    inputId = "pais",
+    label = "Selecciona uno o más países",
+    choices = unique(data_filtered$country),
+    selected = "Spain",
+    multiple = TRUE
+  ),
+  plotlyOutput(outputId = "plot")  # Cambia a plotlyOutput
+)
+
+# Definir la lógica del servidor
+server <- function(input, output, ...) {
+  filtered_data <- reactive({
+    data_filtered %>%
+      filter(country %in% input$pais)
+  })
+  
+  output$plot <- renderPlotly({
+    p <- ggplot(filtered_data(), aes(x = year, y = co2, color = country, group = country,
+                                     text = paste("<br>Año: ", year, "<br>CO2: ", co2, " kT"))) +
+      geom_line() +
+      geom_point() +
+      labs(x = "Año", y = "Emisiones de CO2") +
+      ggtitle("Emisiones de CO2 por Año para Países Seleccionados") +
+      theme_minimal()
+    
+    ggplotly(p, tooltip = "text")  # Especificar que se use el 'text' definido en aes() para las etiquetas
+  })
+}
+
+# Ejecutar la aplicación Shiny
+shinyApp(ui = ui, server = server)
+
+
+
+
