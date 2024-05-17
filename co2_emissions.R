@@ -1,5 +1,9 @@
 library(tidyverse)
 library(mongolite)
+library(ggplot2)
+library(gganimate)
+
+
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -75,6 +79,8 @@ ggplot(data_world, aes(x = year, y = co2)) +
   labs(title = "Evolució del CO2a nivell mundial", x = "Any", y = "CO2") +
   theme_minimal()
 
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
 data_gini <- data %>%
   filter(gini != 0 & co2 != 0)
 
@@ -83,6 +89,8 @@ ggplot(data_gini) +
   geom_point() +
   geom_smooth() +
   labs(title = "Relació de l'índex GINI amb l'emissió de CO2 al 2018", x = "GINI", y = "CO2")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_gdp <- data %>%
   filter(gdp != 0 & gdp < 3e+13 & co2 != 0 & year == 2018)
@@ -93,6 +101,8 @@ ggplot(data_gdp) +
   geom_smooth() +
   labs(title= "Relació del PIB amb l'emissió de CO2 al 2018", x = "PIB", y = "CO2")
 
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
 data_lf <- data %>%
   filter(life_expectancy != 0 & co2 != 0 & co2 < 500 & year == 2018)
 
@@ -102,18 +112,90 @@ ggplot(data_lf) +
   geom_smooth() +
   labs(title= "Relació de l'eperança de vida amb l'emissió de CO2 al 2018", x = "Esperança de vida", y = "CO2")
 
+# --------------------------------------------------------------------------------------------------------------------------------------------
 
-data_filt <- data[data$country %in% c("World", "Non-OECD (GCP)", "Asia", "Asia (GCP)", "Upper-middle-income countries", "High-income countries", "OECD (GCP)", "China", "Asia (excl. China and India)", "North America"), ]
-anim <- ggplot(data_filt, aes(y = country, x = co2, fill = country)) +
-  geom_bar(stat = "identity") +
-  transition_states(year, transition_length = 2, state_length = 1) +
-  labs(x = "Nivel de CO2", y = "País")
+noms_no_pais <- c(
+  "Africa",
+  "Africa (GCP)",
+  "Antarctica",
+  "Asia",
+  "Asia (excl. China and India)",
+  "Asia (GCP)",
+  "Central America (GCP)",
+  "French Equatorial Africa (Jones et al. 2023)",
+  "French West Africa (Jones et al. 2023)",
+  "High-income countries",
+  "International aviation",
+  "International shipping",
+  "International transport",
+  "Kuwaiti Oil Fires (GCP)",
+  "Kuwaiti Oil Fires (Jones et al. 2023)",
+  "Least developed countries (Jones et al. 2023)",
+  "Leeward Islands (GCP)",
+  "Leeward Islands (Jones et al. 2023)",
+  "Low-income countries",
+  "Lower-middle-income countries",
+  "Middle East (GCP)",
+  "Non-OECD (GCP)",
+  "North America",
+  "North America (excl. USA)",
+  "North America (GCP)",
+  "OECD (GCP)",
+  "OECD (Jones et al. 2023)",
+  "Panama Canal Zone (GCP)",
+  "Panama Canal Zone (Jones et al. 2023)",
+  "Ryukyu Islands (GCP)",
+  "Ryukyu Islands (Jones et al. 2023)",
+  "South America",
+  "South America (GCP)",
+  "St. Kitts-Nevis-Anguilla (GCP)",
+  "St. Kitts-Nevis-Anguilla (Jones et al. 2023)",
+  "Upper-middle-income countries",
+  "World",
+  "European Union (28)",
+  "European Union (27)",
+  "Europe (excl. EU-27)",
+  "Europe (excl. EU-28)",
+  "Europe (GCP)",
+  "Europe"
+)
+data_filt <- data[!data$country %in% noms_no_pais, ]
+
+data_formatted <- data_filt %>%
+  group_by(year) %>%
+  mutate(rank = rank(-co2)) %>%
+  group_by(country) %>%
+  filter(rank <=10) %>%
+  ungroup()
+
+anim <- ggplot(data_formatted, aes(rank, group = country,
+                                  fill = as.factor(country), color = as.factor(country))) +
+  geom_tile(aes(y = co2/2,height = co2,width = 0.9), alpha = 0.8, color = NA) +
+  geom_text(aes(y = 0, label = paste(country, " ")), vjust = 0.2, hjust = 1) +
+  geom_text(aes(y=co2,label = co2, hjust=0)) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_x_reverse() +
+  guides(color =
+           "none", fill =
+           "none") +
+  theme(axis.line=element_blank(), axis.text.x=element_blank(), axis.text.y=element_blank(),
+        axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(),
+        legend.position="none",
+        panel.background=element_blank(),panel.border=element_blank(),
+        panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+        panel.grid.major.x = element_line( size=.1, color="grey" ),
+        panel.grid.minor.x = element_line( size=.1, color="grey" ),
+        plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+        plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+        plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+        plot.background=element_blank(), plot.margin = margin(2,2, 2, 4, "cm")) +
+  transition_states(year, transition_length = 1000, state_length = 1000, wrap = FALSE) +
+  view_follow(fixed_x = TRUE) +
+  labs(title = 'CO2 per Year : {closest_state}',
+       subtitle = "Top 10 Countries",
+       caption = "CO2 per country | Data Source: World Bank Data")
 
 animate(anim)
 anim_save(paste0(base, "/animacio_co2.mp4"), animate(anim))
 
-  
-  
-  
-  
   
