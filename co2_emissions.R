@@ -8,6 +8,7 @@ library(ggthemes)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 # Read the CSV file
+base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
 base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
 data <- read.csv(paste(base, "owid-co2-data.csv", sep = "/"))
 
