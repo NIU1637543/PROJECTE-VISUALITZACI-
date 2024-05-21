@@ -363,10 +363,10 @@ server <- function(input, output, ...) {
   
   output$plot <- renderPlotly({
     p <- ggplot(filtered_data(), aes(x = year, y = co2, color = country, group = country,
-                                     text = paste("<br>Año: ", year, "<br>CO2: ", co2, " kT"))) +
+                                     text = paste("<br>Año: ", year, "<br>CO2: ", co2, " Mt"))) +
       geom_line() +
       geom_point() +
-      labs(x = "Año", y = "Emisiones de CO2") +
+      labs(x = "Año", y = "Emisiones de CO2 (mega toneladas)") +
       ggtitle("Emisiones de CO2 por Año para Países Seleccionados") +
       theme_minimal()
     
