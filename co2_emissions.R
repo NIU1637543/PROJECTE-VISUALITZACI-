@@ -345,8 +345,8 @@ data_filtered <- data %>%
 # Definir la interfaz de usuario
 ui <- fluidPage(
   selectizeInput(
-    inputId = "pais",
-    label = "Selecciona uno o más países",
+    inputId = "Pais",
+    label = "Selecciona un o més d'un països",
     choices = unique(data_filtered$country),
     selected = "Spain",
     multiple = TRUE
@@ -363,11 +363,10 @@ server <- function(input, output, ...) {
   
   output$plot <- renderPlotly({
     p <- ggplot(filtered_data(), aes(x = year, y = co2, color = country, group = country,
-                                     text = paste("<br>Año: ", year, "<br>CO2: ", co2, " Mt"))) +
+                                     text = paste("<br>Any: ", year, "<br>CO2: ", co2, " Mt"))) +
       geom_line() +
-      geom_point() +
-      labs(x = "Año", y = "Emisiones de CO2 (mega toneladas)") +
-      ggtitle("Emisiones de CO2 por Año para Países Seleccionados") +
+      labs(x = "Any", y = "Emissions de CO2 (mega tones)") +
+      ggtitle("Emissions de CO2 per any entre països") +
       theme_minimal()
     
     ggplotly(p, tooltip = "text")  # Especificar que se use el 'text' definido en aes() para las etiquetas
