@@ -345,8 +345,8 @@ data_filtered <- data %>%
 # Definir la interfaz de usuario
 ui <- fluidPage(
   selectizeInput(
-    inputId = "Pais",
-    label = "Selecciona un o més d'un països",
+    inputId = "pais",
+    label = "Selecciona un o més d'un països:",
     choices = unique(data_filtered$country),
     selected = "Spain",
     multiple = TRUE
