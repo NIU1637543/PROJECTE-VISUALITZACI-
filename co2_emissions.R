@@ -8,8 +8,9 @@ library(ggthemes)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 # Read the CSV file
-base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
-base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
+#base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
+#base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
+base <- "C:/Users/Usuario/OneDrive/Escriptori/UAB/3r/2nsemestre/visualització/PROJECTE-VISUALITZACI-"
 data <- read.csv(paste(base, "owid-co2-data.csv", sep = "/"))
 
 
@@ -66,7 +67,24 @@ lf_long$year <- as.numeric(lf_long$year)
 data <- merge(data, lf_long, by = c("country", "year"), all.x = TRUE)
 data <- data[, c(1:3, 5:ncol(data), 4)]
 
+# Fusionar taules Superficie
+data_sup <- read.csv(paste(base,"API_AG.SRF.TOTL.K2_DS2_en_csv_v2_485863.csv", sep = "/"), sep = ",", header = FALSE)
+data_sup <- tail(data_sup, -2)
+head(data_sup)
+
+colnames(data_sup) <- c("country", "code", "indicator_name", "indicator_code", 1960:2021)  # Renombrar las columnas
+sup <- data_sup[, c("country", 1960:2021)]
+
+sup_long <- pivot_longer(sup, cols = -country, names_to = "year", values_to = "superficie")
+sup_long$year <- as.numeric(sup_long$year)
+
+
+data <- merge(data, sup_long, by = c("country", "year"), all.x = TRUE)
+data <- data[, c(1:3, 5:ncol(data), 4)]
+
 data[is.na(data)] <- 0
+
+data$densitat_de_poblacio <- ifelse(data$superficie == 0, 0, data$population / data$superficie)
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
