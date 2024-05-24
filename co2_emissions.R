@@ -8,9 +8,9 @@ library(ggthemes)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 # Read the CSV file
-#base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
+base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
 #base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
-base <- "C:/Users/Usuario/OneDrive/Escriptori/UAB/3r/2nsemestre/visualització/PROJECTE-VISUALITZACI-"
+#base <- "C:/Users/Usuario/OneDrive/Escriptori/UAB/3r/2nsemestre/visualització/PROJECTE-VISUALITZACI-"
 setwd(base)
 data <- read.csv(paste(base, "owid-co2-data.csv", sep = "/"))
 
@@ -93,45 +93,49 @@ data_world <- data %>%
   filter(country == "World")
 
 # EVOLUCIÓ DEL CO2 AL LLARG DELS ANYS
-ggplot(data_world, aes(x = year, y = co2)) +
-  geom_point() +
-  #geom_smooth(method = "loess") +
-  labs(title = "Evolució del CO2a nivell mundial", x = "Any", y = "CO2") +
+evol_plot <- ggplot(data_world, aes(x = year, y = co2)) +
+  geom_point(aes(x = year, y = co2)) +
+  geom_smooth(se = TRUE, color = "blue", fill = "blue") +
+  labs(title = "Evolució del CO2 a nivell mundial", x = "Any", y = "CO2 (Kt)") +
   theme_minimal()
-
+ggplotly(evol_plot)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_gini <- data %>%
   filter(gini != 0 & co2 != 0)
 
-ggplot(data_gini) +
+gini_plot <- ggplot(data_gini) +
   aes(x = gini, y = co2) +
-  geom_point() +
-  geom_smooth() +
-  labs(title = "Relació de l'índex GINI amb l'emissió de CO2 al 2018", x = "GINI", y = "CO2")
+  geom_point(aes(x = gini, y = co2, text = country)) +
+  geom_smooth(se = TRUE, color = "blue", fill = "blue") +
+  labs(title = "Relació de l'índex GINI amb l'emissió de CO2 al 2018", x = "GINI", y = "CO2 (Kt)", text = "Country")
+
+ggplotly(gini_plot)
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_gdp <- data %>%
   filter(gdp != 0 & gdp < 3e+13 & co2 != 0 & year == 2018)
 
-ggplot(data_gdp) +
-  aes(x = gdp, y = co2)+
-  geom_point() +
-  geom_smooth() +
-  labs(title= "Relació del PIB amb l'emissió de CO2 al 2018", x = "PIB", y = "CO2")
+gdp_plot <- ggplot(data_gdp, aes(x = gdp, y = co2)) +
+  geom_point(aes(text = country)) +
+  geom_smooth(se = TRUE, color = "blue", fill = "blue") +
+  labs(title= "Relació del PIB amb l'emissió de CO2 al 2018", x = "PIB ($)", y = "CO2 (Kt)", text = "Country")
+
+ggplotly(gdp_plot, tooltip = "text")
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_lf <- data %>%
   filter(life_expectancy != 0 & co2 != 0 & co2 < 500 & year == 2018)
 
-ggplot(data_lf) +
+lf_plot <- ggplot(data_lf) +
   aes(x = life_expectancy, y = co2)+
-  geom_point() +
-  geom_smooth() +
-  labs(title= "Relació de l'eperança de vida amb l'emissió de CO2 al 2018", x = "Esperança de vida", y = "CO2")
+  geom_point(aes(x = life_expectancy, y = co2,text = country)) +
+  geom_smooth(se = TRUE, color = "blue", fill = "blue") +
+  labs(title= "Relació de l'eperança de vida amb l'emissió de CO2 al 2018", x = "Esperança de vida (anys)", y = "CO2 (Kt)", text = "Country")
 
+ggplotly(lf_plot)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 noms_no_pais <- c(
