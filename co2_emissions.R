@@ -11,6 +11,7 @@ library(ggthemes)
 #base <- "C:/Users/34619/Desktop/Enginyeria de Dades/3r/2n semestre/Visualització de Dades/Projecte VD/PROJECTE-VISUALITZACI-"
 #base <- "/Users/marioamadorhurtado/Desktop/CARRERA/3r/2ns/VISUALITZACIÓ DE DADES/PROJECTE/PROJECTE-VISUALITZACI-"
 base <- "C:/Users/Usuario/OneDrive/Escriptori/UAB/3r/2nsemestre/visualització/PROJECTE-VISUALITZACI-"
+setwd(base)
 data <- read.csv(paste(base, "owid-co2-data.csv", sep = "/"))
 
 
