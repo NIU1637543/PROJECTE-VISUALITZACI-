@@ -1,10 +1,9 @@
-library(tidyverse)
 library(mongolite)
-library(ggplot2)
 library(gganimate)
 library(ggthemes)
 library(plotly)
 library(shiny)
+library(tidyverse)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -227,34 +226,37 @@ animate(anim)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_lf <- data %>%
-  filter(life_expectancy > 0 & co2 > 0)
+  filter(life_expectancy > 0 & co2 > 50,co2<2000)
 
-graph1 = ggplot(data_lf, size=population) + 
-  aes(x=co2, y=life_expectancy, color=country, size = population) +
+graph1 = ggplot(data_lf, size=densitat_de_poblacio) + 
+  aes(x=co2, y=life_expectancy, color=country, size = densitat_de_poblacio) +
   geom_point(alpha=0.7, stroke=0, show.legend = FALSE) +
-  scale_size(range=c(2,12)) +
-  labs(title="Life Expectancy vs CO2 Emissions per Country",
-     x="CO2 Emissions",
-     y="Life Expectancy",
-     color="Country") +
+  scale_size(range=c(2,45)) +
+  labs(title="Life Expectancy vs CO2 Emissions per Country (Densitat de Població)",
+       x="CO2 Emissions",
+       y="Life Expectancy",
+       color="Country") +
   theme(legend.position = "none")
-  
+
 graph1.animation = graph1 +
   transition_time(year) +
   labs(subtitle="Year: {frame_time}") +
   shadow_wake(wake_length=0.1)
 graph1.animation  
-  
+
+
+
+
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_gdp <- data %>%
-  filter(gdp > 0 & co2 > 0)
+  filter(gdp > 0 & co2 > 50,co2<5000)
 
-graph1 = ggplot(data_lf) + 
-  aes(x=co2, y=gdp, color=country, size=population) +
+graph1 = ggplot(data_gdp) + 
+  aes(x=co2, y=gdp, color=country, size=densitat_de_poblacio) +
   geom_point(alpha=0.7, stroke=0, show.legend = FALSE) +
-  scale_size(range=c(2,12)) +
-  labs(title="GDP vs CO2 Emissions per Country",
+  scale_size(range=c(2,25)) +
+  labs(title="GDP vs CO2 Emissions per Country (Densitat de Població)",
        x="CO2 Emissions",
        y="GDP",
        color="Country") +
@@ -269,13 +271,13 @@ graph1.animation
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_gini <- data %>%
-  filter(gini > 0 & co2 > 0)
+  filter(gini > 0 & co2 > 50,co2<3000)
 
-graph1 = ggplot(data_lf) + 
-  aes(x=co2, y=gini, color=country, size=population) +
+graph1 = ggplot(data_gini) + 
+  aes(x=co2, y=gini, color=country, size=densitat_de_poblacio) +
   geom_point(alpha=0.7, stroke=0, show.legend = FALSE) +
   scale_size(range=c(2,12)) +
-  labs(title="GDP vs CO2 Emissions per Country",
+  labs(title="GDP vs CO2 Emissions per Country (Densitat de Població)",
        x="CO2 Emissions",
        y="Gini",
        color="Country") +
@@ -285,7 +287,7 @@ graph1.animation = graph1 +
   transition_time(year) +
   labs(subtitle="Year: {frame_time}") +
   shadow_wake(wake_length=0.1)
-graph1.animation  
+graph1.animation
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
  
