@@ -384,7 +384,7 @@ server <- function(input, output, ...) {
   
   output$plot <- renderPlotly({
     p <- ggplot(filtered_data(), aes(x = year, y = co2, color = country, group = country,
-                                     text = paste("<br>Año: ", year, "<br>CO2: ", co2, " Mt"))) +
+                                     text = paste("<br>Any: ", year, "<br>CO2: ", co2, " Mt"))) +
       geom_line() +
       labs(x = "Any", y = "Emissions de CO2 (mega toneladas)") +
       ggtitle("Emissions de CO2 por año entre països") +
