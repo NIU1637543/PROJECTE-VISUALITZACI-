@@ -3,6 +3,8 @@ library(mongolite)
 library(ggplot2)
 library(gganimate)
 library(ggthemes)
+library(plotly)
+library(shiny)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +104,7 @@ ggplotly(evol_plot)
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
 data_gini <- data %>%
-  filter(gini != 0 & co2 != 0)
+  filter(gini != 0 & co2 != 0 & year == 2018)
 
 gini_plot <- ggplot(data_gini) +
   aes(x = gini, y = co2) +
@@ -220,7 +222,7 @@ anim <- ggplot(data_formatted, aes(rank, group = country,
        caption = "CO2 per country | Data Source: World Bank Data")
 
 animate(anim)
-anim_save(paste0(base, "/animacio_co2.mp4"), animate(anim))
+#anim_save(paste0(base, "/animacio_co2.mp4"), animate(anim))
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -351,4 +353,46 @@ data %>%
     y = "GINI"
   ) +
   theme_minimal() +
-  theme(legend.position = "none") 
+  theme(legend.position = "none")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# MAPA INTERACTIU AMB PAÏSOS A ESCOLLIR
+
+# Filtrar y resumir los datos
+data_filtered <- data %>%
+  filter(year > 1960 & year < 2021 & gdp > 0 & co2 > 0)
+
+# Definir la interfaz de usuario
+ui <- fluidPage(
+  selectizeInput(
+    inputId = "pais",  # Cambiado a "pais" para que coincida con el filtro del servidor
+    label = "Selecciona uno o més països:",
+    choices = unique(data_filtered$country),
+    selected = "Spain",
+    multiple = TRUE
+  ),
+  plotlyOutput(outputId = "plot")  # Cambia a plotlyOutput
+)
+
+# Definir la lógica del servidor
+server <- function(input, output, ...) {
+  filtered_data <- reactive({
+    data_filtered %>%
+      filter(country %in% input$pais) %>%
+      arrange(country, year)  # Asegurarse de que los datos estén ordenados
+  })
+  
+  output$plot <- renderPlotly({
+    p <- ggplot(filtered_data(), aes(x = year, y = co2, color = country, group = country,
+                                     text = paste("<br>Año: ", year, "<br>CO2: ", co2, " Mt"))) +
+      geom_line() +
+      labs(x = "Any", y = "Emissions de CO2 (mega toneladas)") +
+      ggtitle("Emissions de CO2 por año entre països") +
+      theme_minimal()
+    
+    ggplotly(p, tooltip = "text")  # Especificar que se use el 'text' definido en aes() para las etiquetas
+  })
+}
+
+# Ejecutar la aplicación Shiny
+shinyApp(ui = ui, server = server)
