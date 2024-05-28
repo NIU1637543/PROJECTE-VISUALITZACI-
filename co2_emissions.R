@@ -388,7 +388,7 @@ data_filtered <- data %>%
 ui <- fluidPage(
   selectizeInput(
     inputId = "pais",  # Cambiado a "pais" para que coincida con el filtro del servidor
-    label = "Selecciona uno o més països:",
+    label = "Selecciona un o més països:",
     choices = unique(data_filtered$country),
     selected = "Spain",
     multiple = TRUE
