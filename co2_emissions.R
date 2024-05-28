@@ -126,7 +126,7 @@ gdp_plot <- ggplot(data_gdp, aes(x = gdp, y = co2)) +
 ggplotly(gdp_plot, tooltip = "text")
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
-
+# ESPERANÇA DE VIDA AMB CO2
 data_lf <- data %>%
   filter(life_expectancy != 0 & co2 != 0 & co2 < 500 & year == 2018)
 
@@ -142,7 +142,19 @@ ggplotly(lf_plot)
 data_dens <- data %>%
   filter(densitat_de_poblacio > 50 & co2 > 50,year==2015,densitat_de_poblacio<500,co2<3000)
 
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# DENSITAT DE POBLACIO AMB CO2
+data_dens <- data %>%
+  filter(densitat_de_poblacio > 50 & co2 > 50,year==2015,densitat_de_poblacio<500,co2<3000)
 
+
+dens_plot <- ggplot(data_dens) +
+  aes(x = densitat_de_poblacio, y = co2) +
+  geom_point(aes(x = densitat_de_poblacio, y = co2, text = country)) +
+  geom_smooth(se = TRUE, color = "blue", fill = "blue") +
+  labs(title = "Relació de la densitat de poblacio amb l'emissió de CO2 al 2015", x = "densitat_de_poblacio", y = "CO2 (Kt)", text = "Country")
+
+ggplotly(dens_plot)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
